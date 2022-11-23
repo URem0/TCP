@@ -1,12 +1,13 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class TCPServer {
     private State state;
     public int port = 8080;
-    byte[] buf;
-    int bufSize = 1024;
 
     public TCPServer() {
     }
@@ -32,37 +33,47 @@ public class TCPServer {
         this.state = state;
     }
 
-    private void setPort(int port){
-        this.port = port;
+    public String getMSG(Socket clientSocket) throws IOException {
+        InputStream in = clientSocket.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line = reader.readLine();
+        return line;
     }
 
-    public void printMSG(InputStream msg) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(msg));
-        String line = reader.readLine();
-        System.out.println(line);
-        checkstate(line);
+    public void printMSG(String msg) throws UnsupportedEncodingException {
+        System.out.println(new String(msg.getBytes(), "utf8"));
     }
-    public void checkstate(String msg){
+
+    public void checkCloseMSG(String msg){
         if (msg.equals("close")){
             setState(State.CLOSE);
         }
     }
 
+    public void ackMSG(Socket clientSocket) throws IOException {
+        InetAddress clientAddress = clientSocket.getInetAddress();
+        String address = clientAddress.getHostAddress();
+        OutputStream out = clientSocket.getOutputStream();
+        PrintWriter writer = new PrintWriter(out, true);
+        writer.println("ACK " + address);
+    }
+
     public void launch() throws IOException {
+        OpenMSG();
         setState(State.LISTENING);
         ServerSocket socket = new ServerSocket(this.port);
         Socket clientSocket = socket.accept();
 
         while (ServerState() == State.LISTENING) {
-            InputStream in = clientSocket.getInputStream();
-            printMSG(in);
-            OutputStream out = clientSocket.getOutputStream();
-            PrintWriter writer = new PrintWriter(out, true);
-            writer.println("ACK");
+            String msg = getMSG(clientSocket);
+            printMSG(msg);
+            ackMSG(clientSocket);
+            checkCloseMSG(msg);
         }
+
+        CloseMSG();
         clientSocket.close();
         socket.close();
-
     }
 
     public static void main(String[] args) throws IOException {
