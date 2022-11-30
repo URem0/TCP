@@ -8,8 +8,10 @@ import java.nio.charset.StandardCharsets;
 public class TCPServer {
     private State state;
     public int port = 8080;
+    ServerSocket socket;
 
-    public TCPServer() {
+    public TCPServer() throws IOException {
+        this.socket = new ServerSocket(this.port);
     }
 
     public enum State {
