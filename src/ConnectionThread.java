@@ -61,6 +61,8 @@ public class ConnectionThread extends Thread{
         System.out.print("Close connection to Client " + numClient);
     }
 
+
+
     public void run(){
         try {
             OpenMSG();
