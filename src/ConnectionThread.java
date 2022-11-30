@@ -36,7 +36,7 @@ public class ConnectionThread extends Thread{
     }
 
     public void printMSG(String msg) throws UnsupportedEncodingException {
-        System.out.println(new String(msg.getBytes(), "utf8"));
+        System.out.println("Client "+ numClient +": " + new String(msg.getBytes(), "utf8"));
     }
 
     public void checkCloseMSG(String msg){
@@ -50,16 +50,18 @@ public class ConnectionThread extends Thread{
         String address = clientAddress.getHostAddress();
         OutputStream out = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(out, true);
-        writer.println("ACK " + address);
+        writer.println("ACK " + address +" : " +clientSocket.getPort());
     }
 
     public void OpenMSG(){
-        System.out.println("Hello Client: " + numClient);
+        System.out.println("Welcome Client " + numClient);
     }
 
     public void CloseMSG(){
-        System.out.println("GoodBye Client: " + numClient);
+        System.out.print("Close connection to Client " + numClient);
     }
+
+
 
     public void run(){
         try {
@@ -71,6 +73,7 @@ public class ConnectionThread extends Thread{
                 ackMSG(socket);
                 checkCloseMSG(msg);
             }
+            TCPMultiServer.reduceNBClient(numClient);
             socket.close();
             CloseMSG();
 
