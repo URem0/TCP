@@ -12,5 +12,5 @@ TCP MultiServer Class on port 8080 by default.
  
  ConnectionThread class used to manage a new Thread for each client
  
-Author Rémy UM, Osama RAIES HADJ BOUBAKER
+Author Rémy UM, Osama RAIES HADJ BOUBAKER\
 ENSEA RTS
