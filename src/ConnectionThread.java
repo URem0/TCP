@@ -1,7 +1,14 @@
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
+/***
+ * ConnectionThread class used to manage a new Thread for each client
+ *
+ * @author Rémy UM, Osama RAIES HADJ BOUBAKER
+ * @author  ENSEA RTS
+ */
 public class ConnectionThread extends Thread{
     int numClient;
     Socket socket;
@@ -31,12 +38,11 @@ public class ConnectionThread extends Thread{
 
     public String getMSG(InputStream in) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line = reader.readLine();
-        return line;
+        return reader.readLine();
     }
 
     public void printMSG(String msg) throws UnsupportedEncodingException {
-        System.out.println("Client "+ numClient +": " + new String(msg.getBytes(), "utf8"));
+        System.out.println("Client "+ numClient +": " + new String(msg.getBytes(), StandardCharsets.UTF_8));
     }
 
     public void checkCloseMSG(String msg){
